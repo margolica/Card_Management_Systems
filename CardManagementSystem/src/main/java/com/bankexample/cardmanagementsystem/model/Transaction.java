@@ -1,32 +1,42 @@
 package com.bankexample.cardmanagementsystem.model;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.security.Timestamp;
+import java.time.LocalDateTime;
 import java.util.UUID;
-
-import static jakarta.persistence.GenerationType.UUID;
 
 @Data
 @Entity
+@Builder
+@EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
-@NoArgsConstructor(access=AccessLevel.PRIVATE, force=true) // Spring JPA требует пустой конструктор, но его нужно инкапсулировать
-public class Transaction {
+@NoArgsConstructor
+//        (access=AccessLevel.PRIVATE, force=true) // Spring JPA требует пустой конструктор, но его нужно инкапсулировать
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Table(name = "transactions")
+public class Transaction extends BaseEntity<UUID> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Генерация на уровне DB
     UUID id;
-    @Column
-    Long clientId;
-    @Column
-    Long cardId;
-    @Column
-    String type;
-    @Column
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    TransactionType type;
+
+    @Column(nullable = false)
     Long amount;
+
     @Column(updatable = false, insertable = false)
-    Timestamp created_at;
+    LocalDateTime created_at;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    User user;
+
+    @ManyToOne
+    @JoinColumn(name = "card_id", referencedColumnName = "id")
+    Card card;
 }

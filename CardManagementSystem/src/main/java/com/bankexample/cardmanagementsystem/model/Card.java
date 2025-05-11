@@ -1,31 +1,54 @@
 package com.bankexample.cardmanagementsystem.model;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
+import java.security.PrivateKey;
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
+@Builder
+@EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
-@NoArgsConstructor(access= AccessLevel.PRIVATE, force=true)
-public class Card {
+@NoArgsConstructor
+//        (access= AccessLevel.PRIVATE, force=true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Table(name = "cards")
+public class Card extends BaseEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @Column
+
+    @Column(nullable = false)
     Long clientId;
-    @Column
+
+    @Column(unique = true, nullable = false)
     Byte[] panEncrypted;
-    @Column
+
+    @Column(nullable = false)
     String panMasked;
-    @Column
-    Date validityPeriod;
-    @Column
-    String status;
-    @Column
+
+    @Column(nullable = false, updatable = false, insertable = false)
+    LocalDateTime validityPeriod;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, updatable = false, insertable = false)
+    CardStatus status;
+
+    @Column(nullable = false)
     Long amount;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "client_id", nullable = false)
+    private User user;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<Transaction> transactions = new HashSet<>();
+
 }
+
