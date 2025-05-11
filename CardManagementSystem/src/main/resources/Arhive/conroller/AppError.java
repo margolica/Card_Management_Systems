@@ -1,4 +1,4 @@
-package com.bankexample.cardmanagementsystem.conroller;
+package Arhive.conroller;
 
 import lombok.Getter;
 import lombok.Setter;

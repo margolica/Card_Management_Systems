@@ -1,11 +1,9 @@
-package com.bankexample.cardmanagementsystem.dto;
+package Arhive.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-
-import java.util.Date;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -18,7 +16,7 @@ public class CardDto {
     String panMasked;
 
     @Schema(description = "Срок действия карты", example = "мм.гг")
-    Date validityPeriod;
+    LocalDateTime validityPeriod;
 
     @Schema(description = "Статус карты", example = "{Active, Blocked, Expired}")
     String status;

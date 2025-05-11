@@ -1,11 +1,9 @@
-package com.bankexample.cardmanagementsystem.dto;
+package Arhive.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-
-import java.util.Date;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -21,11 +19,11 @@ public class UserDto {
     String middle_name;
 
     @Schema(description = "Дата рождения", example = "дд.мм.гг")
-    Date birthday;
+    LocalDateTime birthday;
 
     @Schema(description = "Пол")
     short gender;
 
     @Schema(description = "Дата регистрации", example = "дд.мм.гг")
-    Date registration_date;
+    LocalDateTime registration_date;
 }

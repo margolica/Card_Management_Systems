@@ -1,4 +1,4 @@
-package com.bankexample.cardmanagementsystem.conroller;
+package Arhive.conroller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 

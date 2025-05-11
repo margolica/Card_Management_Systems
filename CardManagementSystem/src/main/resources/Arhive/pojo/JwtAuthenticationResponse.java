@@ -1,4 +1,4 @@
-package com.bankexample.cardmanagementsystem.pojo;
+package Arhive.pojo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

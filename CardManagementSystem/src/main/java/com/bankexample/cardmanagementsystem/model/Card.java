@@ -4,19 +4,18 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.security.PrivateKey;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@Getter
+@Setter
 @Entity
 @Builder
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-//        (access= AccessLevel.PRIVATE, force=true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "cards")
 public class Card extends BaseEntity<Long> {
@@ -24,11 +23,11 @@ public class Card extends BaseEntity<Long> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(nullable = false)
+    @Column(name = "clienrt_id", nullable = false)
     Long clientId;
 
     @Column(unique = true, nullable = false)
-    Byte[] panEncrypted;
+    byte[] panEncrypted;
 
     @Column(nullable = false)
     String panMasked;
@@ -43,12 +42,12 @@ public class Card extends BaseEntity<Long> {
     @Column(nullable = false)
     Long amount;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "client_id", nullable = false)
-    private User user;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<Transaction> transactions = new HashSet<>();
+//    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    @JoinColumn(name = "client_id", nullable = false)
+//    private User user;
+//
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+//    private Set<Transaction> transactions = new HashSet<>();
 
 }
 

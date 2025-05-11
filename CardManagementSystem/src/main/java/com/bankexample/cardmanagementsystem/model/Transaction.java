@@ -1,10 +1,10 @@
 package com.bankexample.cardmanagementsystem.model;
 
+
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.security.Timestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -14,7 +14,7 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-//        (access=AccessLevel.PRIVATE, force=true) // Spring JPA требует пустой конструктор, но его нужно инкапсулировать
+//(access=AccessLevel.PRIVATE, force=true) // Spring JPA требует пустой конструктор, но его нужно инкапсулировать
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "transactions")
 public class Transaction extends BaseEntity<UUID> {
@@ -32,11 +32,11 @@ public class Transaction extends BaseEntity<UUID> {
     @Column(updatable = false, insertable = false)
     LocalDateTime created_at;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    User user;
-
-    @ManyToOne
-    @JoinColumn(name = "card_id", referencedColumnName = "id")
-    Card card;
+//    @ManyToOne
+//    @JoinColumn(name = "user_id", referencedColumnName = "id")
+//    User user;
+//
+//    @ManyToOne
+//    @JoinColumn(name = "card_id", referencedColumnName = "id")
+//    Card card;
 }
