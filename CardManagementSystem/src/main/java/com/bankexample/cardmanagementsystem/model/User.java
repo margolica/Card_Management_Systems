@@ -54,13 +54,13 @@ public class User extends BaseEntity<Long> {
     @Column(nullable = false)
     ERole role;
 
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-//    @Builder.Default
-//    Set<Card> cards = new HashSet<>();
-//
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-//    @Builder.Default
-//    Set<Transaction> transaction = new HashSet<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    Set<Card> cards = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    Set<Transaction> transactions = new HashSet<>();
 
     public String getUsername() {
         return username;

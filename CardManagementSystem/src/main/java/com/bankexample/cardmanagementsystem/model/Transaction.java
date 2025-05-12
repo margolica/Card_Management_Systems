@@ -32,11 +32,11 @@ public class Transaction extends BaseEntity<UUID> {
     @Column(updatable = false, insertable = false)
     LocalDateTime created_at;
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id", referencedColumnName = "id")
-//    User user;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "card_id", referencedColumnName = "id")
-//    Card card;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "card_id", nullable = false)
+    private Card card;
 }

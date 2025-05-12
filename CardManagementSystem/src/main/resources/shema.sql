@@ -15,11 +15,11 @@ CREATE TABLE users (
                        middle_name VARCHAR(100),
                        birthday TIMESTAMP NOT NULL,
                        role VARCHAR(20) NOT NULL CHECK (role IN ('ROLE_USER', 'ROLE_ADMIN')),
-                       gender SMALLINT CHECK (gender IN (0, 1)),
+                       gender VARCHAR(10) NOT NULL CHECK (gender IN ('MALE', 'FEMALE')),
                        registration_date TIMESTAMP NOT NULL
 );
 CREATE TABLE roles (
-                       id SMALLINT GENERATED ALWAYS AS IDENTITY UNIQUE PRIMARY KEY,
+                       id BIGINT GENERATED ALWAYS AS IDENTITY UNIQUE PRIMARY KEY,
                        name VARCHAR(20) UNIQUE NOT NULL
 );
 
@@ -34,7 +34,7 @@ CREATE TABLE users_roles (
 CREATE TABLE cards (
                        id BIGINT GENERATED ALWAYS AS IDENTITY UNIQUE,
                        client_id BIGINT NOT NULL,
-                       pan_encrypted BYTEA NOT NULL,
+                       pan_encrypted VARCHAR NOT NULL,
                        pan_masked VARCHAR(19) NOT NULL,
                        validity_period TIMESTAMP NOT NULL,
                        status VARCHAR(10) NOT NULL,
@@ -45,12 +45,12 @@ CREATE TABLE cards (
 
 CREATE TABLE transactions (
                               id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-                              client_id BIGINT NOT NULL,
+                              user_id BIGINT NOT NULL,
                               card_id BIGINT NOT NULL,
                               type VARCHAR(7) NOT NULL,
                               amount BIGINT NOT NULL,
                               created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                              FOREIGN KEY (client_id) REFERENCES users (id) ON DELETE CASCADE,
+                              FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
                               FOREIGN KEY (card_id) REFERENCES cards (id) ON DELETE CASCADE
 );
 

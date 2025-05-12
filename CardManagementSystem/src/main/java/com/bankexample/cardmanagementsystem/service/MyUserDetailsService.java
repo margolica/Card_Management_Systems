@@ -4,7 +4,6 @@ import com.bankexample.cardmanagementsystem.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -19,8 +18,10 @@ public class MyUserDetailsService implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
+        return Collections.singleton(new SimpleGrantedAuthority(getRole()));
     }
+
+    public String getRole() { return  user.getRole().toString(); }
 
     @Override
     public String getPassword() {

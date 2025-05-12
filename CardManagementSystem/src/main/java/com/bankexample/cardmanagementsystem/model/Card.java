@@ -23,11 +23,11 @@ public class Card extends BaseEntity<Long> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "clienrt_id", nullable = false)
+    @Column(name = "client_id", nullable = false)
     Long clientId;
 
     @Column(unique = true, nullable = false)
-    byte[] panEncrypted;
+    String panEncrypted;
 
     @Column(nullable = false)
     String panMasked;
@@ -42,12 +42,13 @@ public class Card extends BaseEntity<Long> {
     @Column(nullable = false)
     Long amount;
 
-//    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "client_id", nullable = false)
-//    private User user;
-//
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-//    private Set<Transaction> transactions = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private User user;
+
+    @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    Set<Transaction> transactions = new HashSet<>();
 
 }
 
