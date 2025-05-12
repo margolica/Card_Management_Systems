@@ -15,7 +15,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // ------------------ CRUD ------------------
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {

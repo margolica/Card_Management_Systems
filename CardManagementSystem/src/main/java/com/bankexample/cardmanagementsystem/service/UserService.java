@@ -4,6 +4,7 @@ package com.bankexample.cardmanagementsystem.service;
 import com.bankexample.cardmanagementsystem.model.User;
 import com.bankexample.cardmanagementsystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,7 +15,11 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(4);
+
     public User createUser(User user) {
+        user.setPassword(encoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
