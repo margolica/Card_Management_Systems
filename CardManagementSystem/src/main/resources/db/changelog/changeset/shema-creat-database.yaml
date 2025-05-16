@@ -1,13 +1,13 @@
 databaseChangeLog:
   - changeSet:
       id: 1
-      author: you
+      author: Danil
       changes:
         - sql: CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
   - changeSet:
       id: 2
-      author: you
+      author: Danil
       changes:
         - createTable:
             tableName: users
@@ -82,7 +82,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 3
-      author: you
+      author: Danil
       changes:
         - createTable:
             tableName: roles
@@ -104,7 +104,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 4
-      author: you
+      author: Danil
       changes:
         - createTable:
             tableName: users_roles
@@ -140,7 +140,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 5
-      author: you
+      author: Danil
       changes:
         - createTable:
             tableName: cards
@@ -190,7 +190,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 6
-      author: you
+      author: Danil
       changes:
         - createTable:
             tableName: transactions
