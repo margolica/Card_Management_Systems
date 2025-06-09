@@ -1,242 +1,67 @@
 databaseChangeLog:
   - changeSet:
-      id: 1
-      author: Danil
+      id: 0
+      author: system
       changes:
-        - sql: CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-  - changeSet:
-      id: 2
-      author: Danil
-      changes:
+        # users
         - createTable:
             tableName: users
             columns:
               - column:
-                  name: id
-                  type: BIGINT
-                  autoIncrement: true
-                  constraints:
-                    nullable: false
-                    unique: true
-              - column:
                   name: username
-                  type: VARCHAR(50)
-                  constraints:
-                    nullable: false
-                    unique: true
-              - column:
-                  name: password
-                  type: VARCHAR(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: email
                   type: VARCHAR(100)
-                  constraints:
-                    nullable: false
-                    unique: true
-              - column:
-                  name: first_name
-                  type: VARCHAR(15)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: last_name
-                  type: VARCHAR(40)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: middle_name
-                  type: VARCHAR(100)
-              - column:
-                  name: birthday
-                  type: TIMESTAMP
-                  constraints:
-                    nullable: false
-              - column:
-                  name: role
-                  type: VARCHAR(20)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: gender
-                  type: VARCHAR(10)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: registration_date
-                  type: TIMESTAMP
-                  constraints:
-                    nullable: false
-        - sql:
-            splitStatements: false
-            stripComments: true
-            sql: |
-              ALTER TABLE users
-              ADD CONSTRAINT chk_users_role CHECK (role IN ('ROLE_USER', 'ROLE_ADMIN'));
-        - sql:
-            sql: |
-              ALTER TABLE users
-              ADD CONSTRAINT chk_users_gender CHECK (gender IN ('MALE', 'FEMALE'));
-
-  - changeSet:
-      id: 3
-      author: Danil
-      changes:
-        - createTable:
-            tableName: roles
-            columns:
-              - column:
-                  name: id
-                  type: BIGINT
-                  autoIncrement: true
                   constraints:
                     primaryKey: true
                     nullable: false
                     unique: true
-              - column:
-                  name: name
-                  type: VARCHAR(20)
-                  constraints:
-                    nullable: false
-                    unique: true
+              - column: { name: password, type: VARCHAR(255), constraints: { nullable: false } }
+              - column: { name: email, type: VARCHAR(255), constraints: { nullable: false, unique: true } }
+              - column: { name: first_name, type: VARCHAR(100), constraints: { nullable: false } }
+              - column: { name: last_name, type: VARCHAR(100), constraints: { nullable: false } }
+              - column: { name: middle_name, type: VARCHAR(100), constraints: { nullable: false } }
+              - column: { name: birthday, type: TIMESTAMP, constraints: { nullable: false } }
+              - column: { name: gender, type: VARCHAR(10), constraints: { nullable: false } }
+              - column: { name: registration_date, type: TIMESTAMP, constraints: { nullable: false } }
+              - column: { name: role, type: VARCHAR(30), constraints: { nullable: false } }
 
-  - changeSet:
-      id: 4
-      author: Danil
-      changes:
-        - createTable:
-            tableName: users_roles
-            columns:
-              - column:
-                  name: user_id
-                  type: BIGINT
-                  constraints:
-                    nullable: false
-              - column:
-                  name: role_id
-                  type: SMALLINT
-                  constraints:
-                    nullable: false
-        - addPrimaryKey:
-            tableName: users_roles
-            columnNames: user_id, role_id
-            constraintName: pk_users_roles
-        - addForeignKeyConstraint:
-            baseTableName: users_roles
-            baseColumnNames: user_id
-            referencedTableName: users
-            referencedColumnNames: id
-            onDelete: CASCADE
-            constraintName: fk_users_roles_user
-        - addForeignKeyConstraint:
-            baseTableName: users_roles
-            baseColumnNames: role_id
-            referencedTableName: roles
-            referencedColumnNames: id
-            onDelete: CASCADE
-            constraintName: fk_users_roles_role
-
-  - changeSet:
-      id: 5
-      author: Danil
-      changes:
+        # cards
         - createTable:
             tableName: cards
             columns:
-              - column:
-                  name: id
-                  type: BIGINT
-                  autoIncrement: true
-                  constraints:
-                    nullable: false
-                    unique: true
-              - column:
-                  name: client_id
-                  type: BIGINT
-                  constraints:
-                    nullable: false
-              - column:
-                  name: pan_encrypted
-                  type: VARCHAR
-                  constraints:
-                    nullable: false
-              - column:
-                  name: pan_masked
-                  type: VARCHAR(19)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: validity_period
-                  type: TIMESTAMP
-                  constraints:
-                    nullable: false
-              - column:
-                  name: status
-                  type: VARCHAR(10)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: amount
-                  type: BIGINT
+              - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: pan, type: VARCHAR(40), constraints: { nullable: false, unique: true } }
+              - column: { name: cvv, type: VARCHAR(4), constraints: { nullable: false } }
+              - column: { name: validity_period, type: TIMESTAMP, constraints: { nullable: false } }
+              - column: { name: status, type: VARCHAR(30), constraints: { nullable: false } }
+              - column: { name: amount, type: BIGINT, constraints: { nullable: false } }
+              - column: { name: users_username, type: VARCHAR(40), constraints: { nullable: false } }
         - addForeignKeyConstraint:
             baseTableName: cards
-            baseColumnNames: client_id
+            baseColumnNames: users_username
             referencedTableName: users
-            referencedColumnNames: id
-            onDelete: CASCADE
+            referencedColumnNames: username
             constraintName: fk_cards_users
 
-  - changeSet:
-      id: 6
-      author: Danil
-      changes:
+        # transactions
         - createTable:
             tableName: transactions
             columns:
-              - column:
-                  name: id
-                  type: UUID
-                  defaultValueComputed: uuid_generate_v4()
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-              - column:
-                  name: user_id
-                  type: BIGINT
-                  constraints:
-                    nullable: false
-              - column:
-                  name: card_id
-                  type: BIGINT
-                  constraints:
-                    nullable: false
-              - column:
-                  name: type
-                  type: VARCHAR(7)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: amount
-                  type: BIGINT
-                  constraints:
-                    nullable: false
-              - column:
-                  name: created_at
-                  type: TIMESTAMP
-                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column: { name: id, type: UUID, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: type, type: VARCHAR(30), constraints: { nullable: false } }
+              - column: { name: amount, type: BIGINT, constraints: { nullable: false } }
+              - column: { name: created_at, type: TIMESTAMP, constraints: { nullable: false } }
+              - column: { name: users_username, type: VARCHAR(100), constraints: { nullable: false } }
+              - column: { name: card_pan, type: VARCHAR(40), constraints: { nullable: false } }
         - addForeignKeyConstraint:
             baseTableName: transactions
-            baseColumnNames: user_id
+            baseColumnNames: users_username
             referencedTableName: users
-            referencedColumnNames: id
-            onDelete: CASCADE
+            referencedColumnNames: username
             constraintName: fk_transactions_users
         - addForeignKeyConstraint:
             baseTableName: transactions
-            baseColumnNames: card_id
+            baseColumnNames: card_pan
             referencedTableName: cards
-            referencedColumnNames: id
-            onDelete: CASCADE
+            referencedColumnNames: pan
             constraintName: fk_transactions_cards

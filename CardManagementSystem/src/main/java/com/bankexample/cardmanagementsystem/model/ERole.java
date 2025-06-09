@@ -1,5 +1,0 @@
-package com.bankexample.cardmanagementsystem.model;
-
-public enum ERole {
-    ROLE_USER, ROLE_ADMIN
-}

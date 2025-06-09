@@ -1,0 +1,155 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--  <title>Регистрация</title>-->
+<!--  <meta charset="UTF-8">-->
+<!--</head>-->
+<!--<body>-->
+<!--<h1>Регистрация</h1>-->
+<!--<form th:action="@{/auth/register}" method="post">-->
+<!--  <label>Имя пользователя:</label><br/>-->
+<!--  <input type="text" name="username" placeholder="Имя пользователя" required/><br/><br/>-->
+
+<!--  <label>Пароль:</label><br/>-->
+<!--  <input type="password" name="password" placeholder="Пароль" required/><br/><br/>-->
+
+<!--  <label>Email:</label><br/>-->
+<!--  <input type="email" name="email" placeholder="Email" required/><br/><br/>-->
+
+<!--  <label>Имя:</label><br/>-->
+<!--  <input type="text" name="firstName" placeholder="Имя" required/><br/><br/>-->
+
+<!--  <label>Фамилия:</label><br/>-->
+<!--  <input type="text" name="lastName" placeholder="Фамилия" required/><br/><br/>-->
+
+<!--  <label>Отчество:</label><br/>-->
+<!--  <input type="text" name="middleName" placeholder="Отчество" required/><br/><br/>-->
+
+<!--  <label>Дата рождения:</label><br/>-->
+<!--  <input type="datetime-local" name="birthday" value="1995-05-15T00:00:00" required/><br/><br/>-->
+
+<!--  <label>Пол:</label><br/>-->
+<!--  <select name="gender" required>-->
+<!--    <option value="MALE">Мужской</option>-->
+<!--    <option value="FEMALE">Женский</option>-->
+<!--  </select><br/><br/>-->
+
+<!--  <button type="submit">Зарегистрироваться</button>-->
+<!--</form>-->
+<!--</body>-->
+<!--</html>-->
+
+
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--  <title>Регистрация</title>-->
+<!--  <meta charset="UTF-8">-->
+<!--</head>-->
+<!--<body>-->
+<!--<h1>Регистрация</h1>-->
+<!--<form th:action="@{/auth/register}" method="post">-->
+<!--  <label>Имя пользователя:</label><br/>-->
+<!--  <input type="text" name="username" placeholder="Имя пользователя" value="user" required/><br/><br/>-->
+
+<!--  <label>Пароль:</label><br/>-->
+<!--  <input type="password" name="password" placeholder="Пароль" value="user" required/><br/><br/>-->
+
+<!--  <label>Email:</label><br/>-->
+<!--  <input type="email" name="email" placeholder="Email" value="newuser@example.com" required/><br/><br/>-->
+
+<!--  <label>Имя:</label><br/>-->
+<!--  <input type="text" name="firstName" placeholder="Имя" value="Ivan" required/><br/><br/>-->
+
+<!--  <label>Фамилия:</label><br/>-->
+<!--  <input type="text" name="lastName" placeholder="Фамилия" value="Ivanov" required/><br/><br/>-->
+
+<!--  <label>Отчество:</label><br/>-->
+<!--  <input type="text" name="middleName" placeholder="Отчество" value="Ivanovich" required/><br/><br/>-->
+
+<!--  <label>Дата рождения:</label><br/>-->
+<!--  <input type="datetime-local" name="birthday" value="1995-05-15T00:00" required/><br/><br/>-->
+
+<!--  <label>Пол:</label><br/>-->
+<!--  <select name="gender" required>-->
+<!--    <option value="MALE" selected>Мужской</option>-->
+<!--    <option value="FEMALE">Женский</option>-->
+<!--  </select><br/><br/>-->
+
+<!--  <button type="submit">Зарегистрироваться</button>-->
+<!--</form>-->
+<!--</body>-->
+<!--</html>-->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Регистрация</title>
+  <meta charset="UTF-8">
+</head>
+<body>
+<h1>Регистрация</h1>
+
+<form id="registerForm">
+  <label>Имя пользователя:</label><br/>
+  <input type="text" name="username" value="user" required/><br/><br/>
+
+  <label>Пароль:</label><br/>
+  <input type="password" name="password" value="user" required/><br/><br/>
+
+  <label>Email:</label><br/>
+  <input type="email" name="email" value="newuser@example.com" required/><br/><br/>
+
+  <label>Имя:</label><br/>
+  <input type="text" name="firstName" value="Ivan" required/><br/><br/>
+
+  <label>Фамилия:</label><br/>
+  <input type="text" name="lastName" value="Ivanov" required/><br/><br/>
+
+  <label>Отчество:</label><br/>
+  <input type="text" name="middleName" value="Ivanovich" required/><br/><br/>
+
+  <label>Дата рождения:</label><br/>
+  <input type="datetime-local" name="birthday" value="1995-05-15T00:00" required/><br/><br/>
+
+  <label>Пол:</label><br/>
+  <select name="gender" required>
+    <option value="MALE" selected>Мужской</option>
+    <option value="FEMALE">Женский</option>
+  </select><br/><br/>
+
+  <button type="submit">Зарегистрироваться</button>
+</form>
+
+<script>
+  document.getElementById('registerForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const data = {
+      username: form.username.value,
+      password: form.password.value,
+      email: form.email.value,
+      firstName: form.firstName.value,
+      lastName: form.lastName.value,
+      middleName: form.middleName.value,
+      birthday: form.birthday.value,
+      gender: form.gender.value
+    };
+
+    const response = await fetch('/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    if (response.ok) {
+      alert('Успешная регистрация!');
+      window.location.href = '/login';
+    } else {
+      alert('Ошибка регистрации');
+    }
+  });
+</script>
+</body>
+</html>

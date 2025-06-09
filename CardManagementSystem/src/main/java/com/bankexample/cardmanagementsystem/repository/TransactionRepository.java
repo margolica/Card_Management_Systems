@@ -1,6 +1,6 @@
 package com.bankexample.cardmanagementsystem.repository;
 
-import com.bankexample.cardmanagementsystem.model.Transaction;
+import com.bankexample.cardmanagementsystem.model.entity.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

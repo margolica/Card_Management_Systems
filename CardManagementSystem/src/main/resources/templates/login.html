@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <meta charset="UTF-8">
+</head>
+<body>
+<h2>Login</h2>
+
+<form id="loginForm">
+  <label>Username: <input type="text" id="username" required></label><br/>
+  <label>Password: <input type="password" id="password" required></label><br/>
+  <button type="submit">Login</button>
+</form>
+
+<div id="response"></div>
+<script>
+  document.getElementById("loginForm").addEventListener("submit", function(event) {
+    event.preventDefault(); // Предотвращает отправку обычной формы
+
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    fetch("/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ username, password })
+    })
+            .then(async response => {
+              const text = await response.text();
+              try {
+                const json = JSON.parse(text);
+                if (!response.ok) throw new Error(json.message || "Ошибка входа");
+
+                // Показываем токен (можно убрать если не нужно)
+                document.getElementById("response").innerText = "JWT Token: " + json.token;
+
+                // Сохраняем токен в localStorage (если нужно)
+                localStorage.setItem("jwtToken", json.token);
+
+                // Редирект на Swagger UI
+                window.location.href = "/swagger-ui/index.html";
+              } catch (e) {
+                document.getElementById("response").innerText = "Ошибка: " + text;
+              }
+            })
+            .catch(error => {
+              document.getElementById("response").innerText = "Ошибка: " + error.message;
+            });
+  });
+</script>
+
+
+</body>
+</html>

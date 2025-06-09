@@ -1,189 +1,100 @@
 package com.bankexample.cardmanagementsystem.controller.discription;
 
-import com.bankexample.cardmanagementsystem.model.User;
+import com.bankexample.cardmanagementsystem.model.dto.response.BalanceResponse;
+import com.bankexample.cardmanagementsystem.model.dto.CardResponse;
+import com.bankexample.cardmanagementsystem.model.dto.request.TransactionCreateRequest;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
- * Интерфейс API для управления пользователями.
- * Определяет endpoints для работы с пользователями, включая регистрацию, получение, обновление и удаление.
+ * API для действий пользователя с его банковскими картами.
+ *
+ * Пользователь может:
+ * <ul>
+ *   <li>Просматривать свои карты</li>
+ *   <li>Запрашивать блокировку карты</li>
+ *   <li>Переводить средства между своими картами</li>
+ *   <li>Просматривать баланс карт</li>
+ * </ul>
  */
-@Tag(name = "User Management", description = "API для управления пользователями")
+@Tag(name = "User Cards", description = "API для управления банковскими картами пользователя")
 public interface UserApi {
 
     /**
-     * Получает список всех пользователей.
+     * Получение списка карт текущего пользователя.
      *
-     * @return список всех пользователей
+     * @param pageable параметры пагинации
+     * @return постраничный список {@link CardResponse}
      */
-    @Operation(
-            summary = "Получение всех пользователей",
-            description = "Возвращает список всех зарегистрированных пользователей",
-            operationId = "getAllUsers"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Список пользователей успешно получен"),
-            @ApiResponse(responseCode = "401", description = "Неавторизованный запрос"),
-            @ApiResponse(responseCode = "403", description = "Запрещено: недостаточно прав"),
-            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера"),
-            @ApiResponse(responseCode = "502", description = "Ошибка шлюза"),
-            @ApiResponse(responseCode = "503", description = "Сервис недоступен"),
-            @ApiResponse(responseCode = "504", description = "Тайм-аут шлюза")
+    @Operation(summary = "Просмотр всех карт", description = "Получение списка всех карт, привязанных к текущему пользователю, с поддержкой пагинации")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Карты успешно получены"),
+            @ApiResponse(responseCode = "401", description = "Пользователь не авторизован"),
+            @ApiResponse(responseCode = "403", description = "Доступ запрещён")
     })
-    @GetMapping
-    ResponseEntity<List<User>> getAllUsers();
+    @GetMapping("/cards")
+    ResponseEntity<Page<CardResponse>> getUserCards(Pageable pageable);
 
     /**
-     * Создает нового пользователя на основе предоставленных данных.
+     * Запрос на блокировку карты пользователя.
      *
-     * @param user           объект пользователя с данными
-     * @param bindingResult результат валидации входных данных
-     * @return созданный пользователь
+     * @param cardId уникальный идентификатор карты (PAN)
+     * @return информация о заблокированной карте {@link CardResponse}
      */
-    @Operation(
-            summary = "Создание нового пользователя",
-            description = "Создает нового пользователя с предоставленными данными",
-            operationId = "createUser"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Пользователь успешно создан"),
-            @ApiResponse(responseCode = "400", description = "Некорректные данные пользователя"),
-            @ApiResponse(responseCode = "401", description = "Неавторизованный запрос"),
-            @ApiResponse(responseCode = "403", description = "Запрещено: недостаточно прав"),
-            @ApiResponse(responseCode = "409", description = "Пользователь уже существует"),
-            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера"),
-            @ApiResponse(responseCode = "502", description = "Ошибка шлюза"),
-            @ApiResponse(responseCode = "503", description = "Сервис недоступен"),
-            @ApiResponse(responseCode = "504", description = "Тайм-аут шлюза")
+    @Operation(summary = "Блокировка карты", description = "Отправляет запрос на блокировку карты текущего пользователя")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Карта успешно заблокирована"),
+            @ApiResponse(responseCode = "400", description = "Некорректный идентификатор карты"),
+            @ApiResponse(responseCode = "401", description = "Пользователь не авторизован"),
+            @ApiResponse(responseCode = "403", description = "Доступ запрещён"),
+            @ApiResponse(responseCode = "404", description = "Карта не найдена")
     })
-    @PostMapping
-    ResponseEntity<User> createUser(
-            @Valid @RequestBody User user,
-            BindingResult bindingResult
-    );
+    @PatchMapping("/cards/{pan}/block")
+    ResponseEntity<CardResponse> requestCardBlock(@PathVariable String pan);
 
     /**
-     * Получает данные пользователя по его уникальному идентификатору.
+     * Перевод средств между картами текущего пользователя.
      *
-     * @param id идентификатор пользователя
-     * @return найденный пользователь
+     * @param request данные перевода
+     * @return HTTP 200 при успешной операции
      */
-    @Operation(
-            summary = "Получение пользователя по ID",
-            description = "Получает данные пользователя по его уникальному идентификатору",
-            operationId = "getUserById"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Пользователь найден"),
-            @ApiResponse(responseCode = "401", description = "Неавторизованный запрос"),
-            @ApiResponse(responseCode = "403", description = "Запрещено: недостаточно прав"),
-            @ApiResponse(responseCode = "404", description = "Пользователь не найден"),
-            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера"),
-            @ApiResponse(responseCode = "502", description = "Ошибка шлюза"),
-            @ApiResponse(responseCode = "503", description = "Сервис недоступен"),
-            @ApiResponse(responseCode = "504", description = "Тайм-аут шлюза")
+    @Operation(summary = "Перевод между своими картами", description = "Выполняет перевод средств с одной карты пользователя на другую")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Перевод успешно выполнен"),
+            @ApiResponse(responseCode = "400", description = "Некорректные данные перевода"),
+            @ApiResponse(responseCode = "401", description = "Пользователь не авторизован"),
+            @ApiResponse(responseCode = "403", description = "Доступ запрещён"),
+            @ApiResponse(responseCode = "404", description = "Карта не найдена"),
+            @ApiResponse(responseCode = "409", description = "Недостаточно средств")
     })
-    @GetMapping("/{id}")
-    ResponseEntity<User> getUserById(
-            @Parameter(description = "Уникальный идентификатор пользователя")
-            @PathVariable Long id
-    );
+    @PostMapping("/cards/transfer")
+    ResponseEntity<Void> transferBetweenCards(@Valid @RequestBody TransactionCreateRequest request);
 
     /**
-     * Обновляет данные существующего пользователя по его идентификатору.
+     * Получение текущего баланса указанной карты.
      *
-     * @param id            идентификатор пользователя
-     * @param user          объект пользователя с обновленными данными
-     * @param bindingResult результат валидации входных данных
-     * @return обновленный пользователь
+     * @param cardId уникальный идентификатор карты (PAN)
+     * @return текущий баланс карты {@link BalanceResponse}
      */
-    @Operation(
-            summary = "Обновление данных пользователя",
-            description = "Обновляет данные существующего пользователя по его уникальному идентификатору",
-            operationId = "updateUser"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Пользователь успешно обновлен"),
-            @ApiResponse(responseCode = "400", description = "Некорректные данные пользователя"),
-            @ApiResponse(responseCode = "401", description = "Неавторизованный запрос"),
-            @ApiResponse(responseCode = "403", description = "Запрещено: недостаточно прав"),
-            @ApiResponse(responseCode = "404", description = "Пользователь не найден"),
-            @ApiResponse(responseCode = "409", description = "Конфликт с существующими данными пользователя"),
-            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера"),
-            @ApiResponse(responseCode = "502", description = "Ошибка шлюза"),
-            @ApiResponse(responseCode = "503", description = "Сервис недоступен"),
-            @ApiResponse(responseCode = "504", description = "Тайм-аут шлюза")
+    @Operation(summary = "Проверка баланса", description = "Возвращает текущий баланс выбранной карты пользователя")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Баланс успешно получен"),
+            @ApiResponse(responseCode = "400", description = "Некорректный идентификатор карты"),
+            @ApiResponse(responseCode = "401", description = "Пользователь не авторизован"),
+            @ApiResponse(responseCode = "403", description = "Доступ запрещён"),
+            @ApiResponse(responseCode = "404", description = "Карта не найдена")
     })
-    @PutMapping("/{id}")
-    ResponseEntity<User> updateUser(
-            @Parameter(description = "Уникальный идентификатор пользователя")
-            @PathVariable Long id,
-            @Valid @RequestBody User user,
-            BindingResult bindingResult
-    );
-
-    /**
-     * Удаляет пользователя по его уникальному идентификатору.
-     *
-     * @param id идентификатор пользователя
-     * @return подтверждение удаления
-     */
-    @Operation(
-            summary = "Удаление пользователя",
-            description = "Удаляет пользователя по его уникальному идентификатору",
-            operationId = "deleteUser"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Пользователь успешно удален"),
-            @ApiResponse(responseCode = "401", description = "Неавторизованный запрос"),
-            @ApiResponse(responseCode = "403", description = "Запрещено: недостаточно прав"),
-            @ApiResponse(responseCode = "404", description = "Пользователь не найден"),
-            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера"),
-            @ApiResponse(responseCode = "502", description = "Ошибка шлюза"),
-            @ApiResponse(responseCode = "503", description = "Сервис недоступен"),
-            @ApiResponse(responseCode = "504", description = "Тайм-аут шлюза")
-    })
-    @DeleteMapping("/{id}")
-    ResponseEntity<Void> deleteUser(
-            @Parameter(description = "Уникальный идентификатор пользователя")
-            @PathVariable Long id
-    );
-
-//    /**
-//     * Регистрирует нового пользователя.
-//     *
-//     * @param user           объект пользователя с данными для регистрации
-//     * @param bindingResult результат валидации входных данных
-//     * @return зарегистрированный пользователь
-//     */
-//    @Operation(
-//            summary = "Регистрация пользователя",
-//            description = "Регистрирует нового пользователя с предоставленными данными",
-//            operationId = "registerUser"
-//    )
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "201", description = "Пользователь успешно зарегистрирован"),
-//            @ApiResponse(responseCode = "400", description = "Некорректные данные для регистрации"),
-//            @ApiResponse(responseCode = "401", description = "Неавторизованный запрос"),
-//            @ApiResponse(responseCode = "403", description = "Запрещено: недостаточно прав"),
-//            @ApiResponse(responseCode = "409", description = "Пользователь уже существует"),
-//            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера"),
-//            @ApiResponse(responseCode = "502", description = "Ошибка шлюза"),
-//            @ApiResponse(responseCode = "503", description = "Сервис недоступен"),
-//            @ApiResponse(responseCode = "504", description = "Тайм-аут шлюза")
-//    })
-//    @PostMapping("/registration")
-//    ResponseEntity<User> registerUser(
-//            @Valid @RequestBody User user,
-//            BindingResult bindingResult
-//    );
+    @GetMapping("/cards/{pan}/balance")
+    ResponseEntity<BalanceResponse> getCardBalance(@PathVariable String pan);
 }

@@ -1,76 +1,56 @@
 package com.bankexample.cardmanagementsystem.service;
 
-
-import com.bankexample.cardmanagementsystem.model.User;
+import com.bankexample.cardmanagementsystem.model.dto.request.UserUpdateRequest;
+import com.bankexample.cardmanagementsystem.model.entity.User;
+import com.bankexample.cardmanagementsystem.model.mapper.UserMapper;
 import com.bankexample.cardmanagementsystem.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+    private final UserMapper userMapper;
 
-    @Autowired
-    private JwtService jwtService;
+    public UserService(UserRepository userRepository, JwtService jwtService, AuthenticationManager authenticationManager, UserMapper userMapper) {
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
+        this.userMapper = userMapper;
+    }
 
-    @Autowired
-    AuthenticationManager authenticationManager;
+    // Поиск пользователя
+    public User getByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
+    }
 
+    // Регистрация пользователя
+    public User create(User user) {
+        if (userRepository.existsByUsername(user.getUsername()))
+            throw new IllegalArgumentException("Пользователь с таким логином уже существует"); // TODO Обработать самостоятельно
+        return userRepository.save(user);
+    }
+    public Page<User> getAllUsers(@ParameterObject Pageable pageable) {
+         return userRepository.findAll(pageable);
+    }
 
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(4);
+    public User update(UserUpdateRequest updateRequest) {
+        User user = userRepository.findByUsername(updateRequest.username()).orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
 
-    public User createUser(User user) {
-        user.setPassword(encoder.encode(user.getPassword()));
+        userMapper.updateUserFromRequest(updateRequest, user);
         return userRepository.save(user);
     }
 
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow();
-    }
-
-    public List<User> findAll() {
-        return userRepository.findAll();
-    }
-
-    public User updateUser(Long id, User updatedUser) {
-        User user = getUserById(id);
-//        user.setEmail(updatedUser.getEmail());
-//        user.setFirstName(updatedUser.getFirstName());
-        // и так далее
-        // TODO Сделать builder
-        return userRepository.save(user);
-    }
-
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
-    }
-    public User registration(User user) {
-        if (userRepository.existsByUsername(user.getUsername())) {
-            throw new IllegalArgumentException("Пользователь с таким логином уже существует");
-        }
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new IllegalArgumentException("Пользователь с таким email уже существует");
-        }
-        user.setPassword(encoder.encode(user.getPassword()));
-        user.setRegistrationDate(LocalDateTime.now());
-        return userRepository.save(user);
-    }
-
-    public String verify(User user) {
-        Authentication authentication =
-                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
-        if (authentication.isAuthenticated())
-            return jwtService.generateToken(user.getUsername());
-        return "fail";
+    public void delete(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
+        userRepository.delete(user);
     }
 }
