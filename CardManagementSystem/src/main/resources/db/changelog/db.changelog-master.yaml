@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/shema-creat-database.yaml
+  - include:
+      file: db/changelog/changeset/add-default-users.yaml
+  - include:
+      file: db/changelog/changeset/add-cards-for-users.yaml

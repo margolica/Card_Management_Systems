@@ -1,0 +1,68 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: system
+      context: dev
+      changes:
+
+        # Cards for user
+        - insert:
+            tableName: cards
+            columns:
+              - column: { name: pan, value: '1111222233330001' }
+              - column: { name: cvv, value: '123' }
+              - column: { name: validity_period, valueDate: '2030-01-01T00:00:00' }
+              - column: { name: status, value: 'ACTIVE' }
+              - column: { name: amount, valueNumeric: 0 }
+              - column: { name: users_username, value: 'user' }
+
+        - insert:
+            tableName: cards
+            columns:
+              - column: { name: pan, value: '1111222233330002' }
+              - column: { name: cvv, value: '456' }
+              - column: { name: validity_period, valueDate: '2030-01-01T00:00:00' }
+              - column: { name: status, value: 'ACTIVE' }
+              - column: { name: amount, valueNumeric: -1000 }
+              - column: { name: users_username, value: 'user' }
+
+        - insert:
+            tableName: cards
+            columns:
+              - column: { name: pan, value: '1111222233330003' }
+              - column: { name: cvv, value: '789' }
+              - column: { name: validity_period, valueDate: '2030-01-01T00:00:00' }
+              - column: { name: status, value: 'ACTIVE' }
+              - column: { name: amount, valueNumeric: 1000 }
+              - column: { name: users_username, value: 'user' }
+
+        # Cards for admin
+        - insert:
+            tableName: cards
+            columns:
+              - column: { name: pan, value: '2222333344440001' }
+              - column: { name: cvv, value: '321' }
+              - column: { name: validity_period, valueDate: '2030-01-01T00:00:00' }
+              - column: { name: status, value: 'ACTIVE' }
+              - column: { name: amount, valueNumeric: 0 }
+              - column: { name: users_username, value: 'admin' }
+
+        - insert:
+            tableName: cards
+            columns:
+              - column: { name: pan, value: '2222333344440002' }
+              - column: { name: cvv, value: '654' }
+              - column: { name: validity_period, valueDate: '2030-01-01T00:00:00' }
+              - column: { name: status, value: 'ACTIVE' }
+              - column: { name: amount, valueNumeric: -1000 }
+              - column: { name: users_username, value: 'admin' }
+
+        - insert:
+            tableName: cards
+            columns:
+              - column: { name: pan, value: '2222333344440003' }
+              - column: { name: cvv, value: '987' }
+              - column: { name: validity_period, valueDate: '2030-01-01T00:00:00' }
+              - column: { name: status, value: 'ACTIVE' }
+              - column: { name: amount, valueNumeric: 0 }
+              - column: { name: users_username, value: 'admin' }
